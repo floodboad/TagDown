@@ -9,6 +9,7 @@
       :browser-mode="browserMode"
       @change-browser-mode="changeBrowserModeHandler"
       @change-browser-type="browserType = $event"
+      @get-current-tabs="getCurrentWindowTabs"
     />
     <!-- menu -->
     <div class="px-8 py-2 border-b border-gray-200">
@@ -35,10 +36,14 @@
         @clear-pin-list="clearPinListHandler"
         @clear-select-pin-nodes="clearSelectPinNodesHandler"
         @delete-pin-bookmarks="deletePinBookmarksHandler"
+        @show-tab-url="showTabGridUrl"
       />
     </div>
     <!-- content -->
     <div class="main flex-grow w-full overflow-y-auto">
+      <SessionTabsGrid v-show="browserMode ==='tabs'"
+                       ref="tabGrid" :wins="wins"></SessionTabsGrid>
+
       <BrowserGrid
         v-show="browserMode === 'grid' && (browserType === 'all' || browserType === 'star')"
         ref="grid"
@@ -117,6 +122,7 @@ import BrowserTree from './Browser/BrowserTree.vue';
 import BrowserPin from './Browser/BrowserPin.vue';
 import BrowserMenu from './Browser/BrowserMenu.vue';
 import BrowserMenuPin from './Browser/BrowserMenuPin.vue';
+import SessionTabsGrid from './tabs/SessionTabsGrid.vue';
 
 export default {
   components: {
@@ -127,6 +133,7 @@ export default {
     BrowserGrid,
     BrowserTree,
     BrowserPin,
+    SessionTabsGrid,
   },
   setup() {
     // browser page setting
@@ -134,7 +141,9 @@ export default {
     const browserMode = ref(''); // grid, tree
 
     chrome.storage.local.get('popupBrowser', (result) => {
-      if (result.popupBrowser === 'star') {
+      if(result.popupBrowser === 'tabs') {
+        browserMode.value = 'tabs';
+      }else if (result.popupBrowser === 'star') {
         browserMode.value = 'grid';
         browserType.value = 'star';
       } else {
@@ -333,6 +342,43 @@ export default {
     const newGroupColor = ref('blue'); // grey, blue, red, yellow, green, pink, purple, cyan
     const currentGroupId = ref(NaN);
 
+    const wins=ref([]);
+    // get all tabs
+    const getCurrentWindowTabs = async () => {
+
+      let winsess = await chrome.windows.getAll();
+      console.log("------------>winsess:", winsess);
+      winsess.forEach( (win ,index )=>{
+        let wid = win.id;
+        new Promise((resolve, reject) => {
+          let tabs = chrome.tabs.query({
+            windowId: wid,
+          });
+          resolve(tabs);
+        }).then(res => {
+          console.log("------>Window-",index,"-",wid,":\n");
+          console.log("------------>tbs:\n", res);
+          let tmpw = ref(null);
+          tmpw.id = wid;
+          tmpw.name = "Window-"+index+"-"+wid;
+          tmpw.tabs = res;
+          console.log("------------>tmpw:\n", tmpw);
+          wins.value.push(tmpw);
+
+        })
+      });
+
+      console.log("------------>wins:\n", wins);
+
+
+      // $emit('change-browser-mode', 'tabs')
+      changeBrowserModeHandler('tabs');
+    };
+    const tabGrid = ref(null);
+    const showTabGridUrl = () => {
+      tabGrid.value.showTaburl();
+    };
+
     return {
       changeBrowserModeHandler,
       currentNodeId,
@@ -365,6 +411,10 @@ export default {
       newGroupName,
       newGroupColor,
       currentGroupId,
+      wins,
+      getCurrentWindowTabs,
+      showTabGridUrl,
+      tabGrid,
     };
   },
 };
