@@ -24,10 +24,6 @@
 </template>
 
 <script>
-  // import BookmarkFavicon from '../Browser/BookmarkFavicon';
-  // import PopupMenu from '../Modal/PopupMenu';
-  // import InputModal from '../Modal/InputModal';
-  // import PromptModal from '../Modal/PromptModal';
   import useTabSession from '@/composables/useTabSession';
 
   import {

@@ -19,6 +19,19 @@
         />
       </svg>
     </button> -->
+    <!-- go to tabsession -->
+
+    <div class="flex items-left space-x-1.5">
+      <button
+        title="go to Tab Session"
+        class="edit-bookmark-btn w-8 h-8 relative h-center bg-cover bg-center bg-no-repeat text-white text-opacity-0 hover:text-opacity-100 rounded"
+        @click="changePage('tabSession')"
+      >
+        <svg class="w-6 h-6" viewBox="0 0 32 32" fill="gray">
+          <path d="M22.4 8.32h-16v-3.2l-6.4 5.44 6.4 5.12v-2.88h16v-4.48zM32 21.76l-6.4-5.44v3.2h-16v4.48h16v2.88l6.4-5.12z"></path>
+        </svg>
+      </button>
+    </div>
     <!-- bookmark open setting -->
     <div
       v-show="browserType !== 'pin'"
