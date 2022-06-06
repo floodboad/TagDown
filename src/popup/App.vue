@@ -9,10 +9,6 @@
     class="tag-mode"
     :bookmark-id="bookmarkId"
   />
-  <TabSession
-    v-if="page === 'tabSession'"
-    class="browser-mode"
-  ></TabSession>
   <transition name="dissolve">
     <div
       v-if="showMsg && msg"
@@ -35,11 +31,9 @@ import { exportDB, importInto } from 'dexie-export-import';
 import useWebDAV from '@/composables/useWebDAV';
 import BrowserPage from './components/BrowserPage.vue';
 import EditPage from './components/EditPage.vue';
-import TabSession from './components/TabSession.vue';
 
 export default {
   components: {
-    TabSession,
     BrowserPage,
     EditPage,
   },
@@ -62,8 +56,6 @@ export default {
           page.value = 'browser';
         } else if (popupStateResult.popupState === 'edit') {
           page.value = 'edit';
-        } else if (popupStateResult.popupState === 'tabSession') {
-          page.value = 'tabSession';
         } else {
           page.value = 'browser';
         }
